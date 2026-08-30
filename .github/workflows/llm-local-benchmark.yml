@@ -1,0 +1,46 @@
+name: AquaEdge Local LLM Benchmark
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/llm-local-benchmark.yml'
+      - 'scripts/benchmark_ollama_stdlib.py'
+      - 'data/eval/llm_eval_v0.jsonl'
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          sleep 5
+          curl --fail http://127.0.0.1:11434/api/tags
+
+      - name: Benchmark Gemma 3 1B
+        run: |
+          ollama pull gemma3:1b
+          python scripts/benchmark_ollama_stdlib.py \
+            --model gemma3:1b \
+            --out results/llm_ollama_gemma3_1b.json
+          ollama rm gemma3:1b
+
+      - name: Benchmark Qwen3 1.7B
+        run: |
+          ollama pull qwen3:1.7b
+          python scripts/benchmark_ollama_stdlib.py \
+            --model qwen3:1.7b \
+            --out results/llm_ollama_qwen3_1_7b.json
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: aquaedge-local-llm-results
+          path: results/llm_ollama_*.json
+          retention-days: 7
