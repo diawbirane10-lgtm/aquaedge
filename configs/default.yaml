@@ -1,0 +1,51 @@
+site:
+  name: Tamsoult pilot concept
+  commune: Aguinane
+  province: Tata
+  country: Morocco
+  trl: 2
+
+network:
+  topology: star
+  radio: LoRa
+  hub_backhaul: 4G_LTE
+  nodes:
+    N1: borehole_pump
+    N2: reservoir
+    N3: distribution_valve
+    N4: downstream_quality
+
+hub:
+  platform: RevPi Connect 5
+  io_modules:
+    - RevPi AIO
+    - RevPi DIO
+    - RevPi RO
+  control_runtime: CODESYS
+  offline_first: true
+
+ai:
+  process_model: xgboost
+  sensor_health_model: xgboost_binary
+  digital_twin: EPANET_WNTR_planned
+  llm:
+    provider: ollama
+    model: gemma3:4b
+    read_only: true
+    mhs_ready: true
+    mcp_gateway: true
+
+safety:
+  llm_has_direct_write_authority: false
+  ml_has_direct_safety_authority: false
+  hardwired_interlocks:
+    - borehole_low_low
+    - reservoir_high_high
+    - emergency_stop
+    - major_vfd_fault
+
+power:
+  electronics_bus_vdc: 24
+  source: solar_battery
+  battery_chemistry: LiFePO4
+  pump_power_chain_separate: true
