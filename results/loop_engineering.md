@@ -6,17 +6,17 @@ Date: 2026-08-30
 
 The engineering loop produced a **promising TRL-2 synthetic proof of concept**, but not field-conclusive evidence.
 
-The strongest current result is a two-stage architecture:
+The strongest current architecture is a two-stage cascade:
 
 1. sensor-health screening;
-2. process anomaly classification with physics/temporal features.
+2. process anomaly classification with normalized physics/temporal features.
 
-On completely unseen synthetic episodes, the current cascade reaches:
+The development run reached accuracy **0.733** / macro-F1 **0.721**. The current repository was then re-executed independently in GitHub Actions; the reproducible run reached:
 
-- accuracy: **0.733**;
-- macro F1: **0.721**.
+- accuracy: **0.728**;
+- macro-F1: **0.718**.
 
-This is sufficient to justify continued development and to document a preliminary MVP in the TAQA technical report, provided the report clearly labels the results as **synthetic simulation results**.
+This close agreement is useful evidence that the result is reproducible at software-MVP level. It is sufficient to justify continued development and to document a preliminary MVP in the TAQA technical report, provided the report clearly labels the values as **synthetic simulation results**.
 
 It is **not** sufficient to claim field detection accuracy at Tamsoult.
 
@@ -130,25 +130,32 @@ physics residuals + process ML
  normal / leak / pump fault / dry run / quality drift
 ```
 
-### Result
+### Development result
 
 - accuracy: **0.733**;
 - macro F1: **0.721**.
 
-Per-class F1:
+### Reproducible GitHub Actions validation
 
-- normal: **0.584**;
-- leak: **0.721**;
-- pump fault: **0.743**;
-- dry run: **0.966**;
-- quality drift: **0.902**;
-- sensor fault: **0.410**.
+Workflow run: `33296487271`.
+
+- accuracy: **0.728**;
+- macro F1: **0.718**.
+
+Per-class F1 in the reproducible run:
+
+- normal: **0.580**;
+- leak: **0.710**;
+- pump fault: **0.738**;
+- dry run: **0.957**;
+- quality drift: **0.895**;
+- sensor fault: **0.425**.
 
 ### Interpretation
 
-The cascade is the current baseline architecture.
+The cascade is the current baseline architecture. Dry-run and quality-drift scenarios are already strongly separable in the synthetic environment; leak and pump-fault detection are promising; normal-state and especially sensor-fault discrimination require further work.
 
-The relatively low sensor-fault recall shows that sensor diagnostics still require dedicated engineering: plausibility checks, stuck-sensor detection, redundancy/cross-consistency and eventually calibration/maintenance metadata.
+The low sensor-fault recall (**0.283**) confirms that sensor diagnostics still require dedicated engineering: plausibility checks, stuck-sensor detection, redundancy/cross-consistency and eventually calibration/maintenance metadata.
 
 ---
 
@@ -163,13 +170,18 @@ Interpretation: document retrieval is already usable as a minimal baseline, but 
 
 ---
 
-## LLM cycle status
+## LLM engineering cycle
 
-Provider adapters and the evaluation harness can be implemented without credentials, but **live hosted-LLM benchmarking cannot be scientifically executed without provider API keys**, and this environment does not contain downloadable model weights.
+The repository now contains:
 
-Therefore no fabricated Claude/Groq/Mistral/OpenAI score is reported.
+- a provider-neutral LLM adapter layer (Ollama, Groq, Mistral, Anthropic, OpenAI Responses, OpenRouter);
+- an AquaEdge system prompt with explicit safety boundaries;
+- an MHS-ready hardware registry;
+- a 20-case domain/safety evaluation set;
+- a small supervised instruction dataset for optional LoRA/QLoRA adaptation;
+- an Ollama benchmark workflow that runs open-source models without external API credentials.
 
-Recommended local first model on the user's workstation: **Gemma 3 4B through Ollama**. A higher-capability comparison can use **GPT-OSS 20B** when memory allows, plus hosted models through the same evaluation harness.
+Live hosted-provider benchmarking still requires provider API keys. No fabricated Claude/Groq/Mistral/OpenAI scores will be reported.
 
 ---
 
@@ -186,16 +198,17 @@ The report can truthfully contain:
 - MHS-ready/MCP/LLM architecture;
 - synthetic telemetry methodology;
 - three-cycle ML engineering process;
-- preliminary synthetic metrics;
+- reproducible preliminary synthetic metrics;
+- RAG/LLM evaluation methodology;
 - limitations and field-validation plan.
 
 ### What must not be claimed?
 
 Do not claim:
 
-- 73% field accuracy;
-- Tamsoult validation;
+- 72.8% field accuracy;
+- Tamsoult field validation;
 - physical deployment;
 - MHS compliance certification;
-- successful hosted-LLM benchmark before actual API runs;
+- hosted-LLM benchmark results before actual API runs;
 - regulatory water-potability certification from the AI model.
