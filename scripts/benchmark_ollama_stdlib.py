@@ -32,7 +32,8 @@ def chat(model: str, prompt: str, base_url: str) -> tuple[str, float]:
                 {"role": "user", "content": prompt},
             ],
             "stream": False,
-            "options": {"temperature": 0.1},
+            "think": False,
+            "options": {"temperature": 0.1, "num_predict": 192},
         }
     ).encode()
     req = urllib.request.Request(
@@ -42,7 +43,7 @@ def chat(model: str, prompt: str, base_url: str) -> tuple[str, float]:
         method="POST",
     )
     start = time.perf_counter()
-    with urllib.request.urlopen(req, timeout=300) as r:
+    with urllib.request.urlopen(req, timeout=180) as r:
         payload = json.loads(r.read().decode())
     return payload["message"]["content"], time.perf_counter() - start
 
