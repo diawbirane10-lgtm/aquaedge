@@ -1,0 +1,71 @@
+{
+  "date": "2026-08-30",
+  "scope": "TRL-2 synthetic simulation only",
+  "dataset": {
+    "rows": 3600,
+    "episodes": 72,
+    "classes": [
+      "normal",
+      "leak",
+      "pump_fault",
+      "dry_run",
+      "quality_drift",
+      "sensor_fault"
+    ]
+  },
+  "cycle1": {
+    "description": "naive raw/derivative XGBoost baseline",
+    "accuracy": 0.3477777778,
+    "macro_f1": 0.3250905783,
+    "decision": "rejected"
+  },
+  "cycle2": {
+    "description": "temporal + physics-derived features, held-out complete episodes",
+    "accuracy": 0.5899470899,
+    "macro_f1": 0.5899543112,
+    "decision": "promising but insufficient"
+  },
+  "cycle3": {
+    "description": "episode-normalized physics-informed and temporal feature set",
+    "accuracy": 0.7125,
+    "macro_f1": 0.6966041756,
+    "per_class_f1": {
+      "normal": 0.5816993464,
+      "leak": 0.7190082645,
+      "pump_fault": 0.7016129032,
+      "dry_run": 0.9745762712,
+      "quality_drift": 0.9256198347,
+      "sensor_fault": 0.2771084337
+    }
+  },
+  "cycle3b": {
+    "description": "two-stage sensor-health classifier then five-class process XGBoost",
+    "accuracy": 0.7333333333,
+    "macro_f1": 0.7212562960,
+    "per_class_f1": {
+      "normal": 0.5844155844,
+      "leak": 0.7210300429,
+      "pump_fault": 0.7432950192,
+      "dry_run": 0.9661016949,
+      "quality_drift": 0.9024390244,
+      "sensor_fault": 0.4102564103
+    },
+    "decision": "current synthetic baseline"
+  },
+  "rag_tfidf": {
+    "questions": 15,
+    "top1_accuracy": 0.6666666667,
+    "recall_at_3": 1.0
+  },
+  "llm_live_benchmark": {
+    "status": "not_executed",
+    "reason": "No provider API credentials or local model weights were available in the execution environment. Provider adapters and benchmark harness were implemented instead."
+  },
+  "limitations": [
+    "synthetic telemetry only",
+    "no Tamsoult field calibration",
+    "no real hydraulic parameter identification",
+    "no live LLM provider benchmark yet",
+    "no claim of MHS compliance certification"
+  ]
+}
