@@ -80,7 +80,7 @@ tests/             # unit tests
 
 The first local backend is **Ollama**. Recommended test order:
 
-- `gemma3:4b` — compact local baseline (~3.3 GB quantized in Ollama);
+- `gemma3:4b` — compact local baseline;
 - `gpt-oss:20b` — stronger reasoning benchmark when workstation memory permits;
 - cloud/API candidates: Groq GPT-OSS, Mistral, Claude and OpenAI Responses API.
 
@@ -108,14 +108,24 @@ API keys are always read from environment variables. **Never commit keys to this
 
 ## Current engineering-loop status
 
-Three ML iterations were executed on synthetic telemetry with **unseen episodes held out** rather than a random row split.
+Three design iterations plus a cascade correction were evaluated on synthetic telemetry with **complete unseen episodes held out**, rather than a random row split.
 
 - Cycle 1 — naive baseline: macro-F1 **0.325** (rejected).
 - Cycle 2 — temporal + physics-derived features: macro-F1 **0.590**.
 - Cycle 3 — normalized physics-informed feature set: macro-F1 **0.697**.
-- Cycle 3b — two-stage sensor-health + process classifier: macro-F1 **0.721**.
+- Cycle 3b — two-stage sensor-health + process classifier: initial development run macro-F1 **0.721**.
+- **Reproducible GitHub Actions validation of the current code:** accuracy **0.728**, macro-F1 **0.718**.
 
-These results are promising for a TRL-2 synthetic proof of concept but **not field-conclusive**. See `results/loop_engineering.md`.
+Reproducible per-class F1 for the current baseline:
+
+- normal: **0.580**;
+- leak: **0.710**;
+- pump fault: **0.738**;
+- dry run: **0.957**;
+- quality drift: **0.895**;
+- sensor fault: **0.425**.
+
+These results are promising for a TRL-2 synthetic proof of concept but **not field-conclusive**. See `results/loop_engineering.md` and `results/cycle3_runtime.json`.
 
 ## Scientific caution
 
